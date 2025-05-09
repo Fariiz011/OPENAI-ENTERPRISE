@@ -3,224 +3,118 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EnterpriseAI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/feather-icons"></script>
   <style>
-    body {
-      margin: 0;
-      background-color: #000;
-      font-family: 'Segoe UI', sans-serif;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
-    }header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  background-color: #111;
-}
-
-.logo {
-  font-size: 1.2em;
-  font-weight: bold;
-}
-
-.settings {
-  cursor: pointer;
-}
-
-.chat-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  animation: fadeIn 1s ease;
-}
-
-.bubble {
-  background: #1f1f1f;
-  border-radius: 20px;
-  padding: 16px;
-  margin: 10px 0;
-  max-width: 600px;
-  width: 100%;
-  box-shadow: 0 0 10px #111;
-  white-space: pre-wrap;
-}
-
-.input-box {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background-color: #1f1f1f;
-  padding: 16px;
-  border-radius: 20px;
-  width: 100%;
-  max-width: 600px;
-  margin: 20px auto;
-}
-
-.input-box input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: #fff;
-  font-size: 1em;
-  outline: none;
-}
-
-.input-box button {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 1.4em;
-  cursor: pointer;
-}
-
-.button-group {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.button-group button {
-  background: transparent;
-  border: 1px solid #444;
-  padding: 10px 16px;
-  border-radius: 30px;
-  color: #fff;
-  cursor: pointer;
-  font-size: 0.95em;
-}
-
-.loader {
-  border: 4px solid #333;
-  border-top: 4px solid #fff;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  animation: spin 1s linear infinite;
-  margin: 20px auto;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.fade-in-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 2em;
-  animation: fadeOut 1.2s ease 1.5s forwards;
-  z-index: 9999;
-}
-
-@keyframes fadeOut {
-  to { opacity: 0; visibility: hidden; }
-}
-
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
+    body { display:flex; flex-direction:column; height:100vh; background:#000; color:#fff; }
+    header { display:flex; justify-content:space-between; align-items:center; padding:1rem; background:#000; }
+    .logo { font-size:1.25rem; font-weight:600; }
+    .menu-btn { background:none; border:none; color:#fff; cursor:pointer; font-size:1.5rem; }
+    .sidebar { position:fixed; top:0; right:-260px; width:260px; height:100%; background:#111; transition:right .3s; padding:1rem; }
+    .sidebar.show { right:0; }
+    .sidebar h2 { margin-bottom:.75rem; font-size:1.1rem; }
+    .sidebar .setting { margin-bottom:1rem; }
+    .sidebar label { display:flex; justify-content:space-between; align-items:center; margin-bottom:.5rem; }
+    .sidebar button { width:100%; padding:.5rem; margin-top:1rem; background:#222; border:none; color:#fff; border-radius:6px; cursor:pointer; }
+    .chat-area { flex:1; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; padding:.5rem; overflow-y:auto; }
+    .bubble { background:#333; padding:.75rem 1rem; border-radius:12px; max-width:80%; margin:.5rem 0; }
+    .bubble.bot { align-self:flex-start; }
+    .bubble.user { align-self:flex-end; background:#444; }
+    .presets { display:flex; flex-wrap:wrap; gap:.5rem; margin:.5rem 0; }
+    .presets button { background:transparent; border:1px solid #444; color:#fff; padding:.5rem .75rem; border-radius:20px; cursor:pointer; font-size:.85rem; }
+    .input-box { display:flex; align-items:center; gap:.5rem; padding:0 .5rem; }
+    .input-box input { flex:1; padding:.75rem; border-radius:20px; border:1px solid #444; background:#111; color:#fff; outline:none; }
+    .input-box button { background:none; border:none; font-size:1.25rem; color:#fff; cursor:pointer; }
+    .dark-mode { background:#f5f5f5; color:#111; }
+    .dark-mode .sidebar { background:#ddd; color:#111; }
+    .dark-mode .bubble { background:#e0e0e0; color:#111; }
+    .dark-mode .bubble.user { background:#ccc; }
+    .dark-mode .input-box input { background:#fff; color:#111; border-color:#ccc; }
   </style>
 </head>
 <body>
-  <div class="fade-in-screen">Memuat EnterpriseAI...</div>
   <header>
     <div class="logo">EnterpriseAI</div>
-    <div class="settings">⚙️</div>
-  </header>  <div class="chat-container">
-    <div class="bubble" id="responseBox" style="display:none;"></div>
-    <div class="loader" id="loader" style="display:none;"></div>
-    <div class="input-box">
-      <input type="text" id="promptInput" placeholder="Tanyakan sesuatu..." />
-      <button onclick="sendPrompt()">✈️</button>
+    <button class="menu-btn" onclick="toggleSidebar()"><i data-feather="menu"></i></button>
+  </header>
+  <div class="sidebar" id="sidebar">
+    <h2>Pengaturan</h2>
+    <div class="setting">
+      <label>Mode Gelap
+        <input type="checkbox" id="darkToggle">
+      </label>
     </div>
-    <div class="button-group" id="buttonGroup"></div>
-  </div><audio id="pingSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
-
-  <script>
-    const COHERE_API_KEY = 'IHjr8UQKTNoXYBn4Tp6hUVrzbVY91I2VRgdnQWaO';
-
-    const prompts = [
-      "Tentang EnterpriseAI",
-      "Jelaskan konsep AI",
-      "Buat puisi tentang teknologi",
-      "Apa itu machine learning?",
-      "Buat ide startup AI"
-    ];
-
-    const buttonGroup = document.getElementById("buttonGroup");
-    const responseBox = document.getElementById("responseBox");
-    const loader = document.getElementById("loader");
-    const pingSound = document.getElementById("pingSound");
-
-    prompts.forEach(text => {
-      const btn = document.createElement("button");
-      btn.textContent = text;
-      btn.onclick = () => sendCustomPrompt(text);
-      buttonGroup.appendChild(btn);
+    <div class="setting">
+      <label>Multi Bahasa
+        <select id="langSelect">
+          <option value="id">Bahasa Indonesia</option>
+          <option value="en">English</option>
+        </select>
+      </label>
+    </div>
+    <div class="setting">
+      <button onclick="alertInfo('support')">Support</button>
+    </div>
+    <div class="setting">
+      <button onclick="alertInfo('about')">Tentang EnterpriseAI</button>
+    </div>
+  </div>
+  <div class="chat-area" id="chatArea">
+    <div class="bubble bot" id="welcome">Selamat datang di EnterpriseAI.</div>
+    <div class="presets" id="presets"></div>
+  </div>
+  <div class="input-box">
+    <input type="text" id="userInput" placeholder="Tanyakan sesuatu...">
+    <button onclick="sendMessage()"><i data-feather="arrow-up"></i></button>
+  </div>  <script>
+    feather.replace();
+    // Sidebar
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('show'); }
+    // Dark mode toggle
+    document.getElementById('darkToggle').addEventListener('change', e => {
+      document.body.classList.toggle('dark-mode', e.target.checked);
     });
-
-    function sendCustomPrompt(text) {
-      document.getElementById("promptInput").value = text;
-      sendPrompt();
+    // Language change
+    document.getElementById('langSelect').addEventListener('change', e => {
+      const lang = e.target.value;
+      const welcome = document.getElementById('welcome');
+      welcome.textContent = lang==='en'? 'Welcome to EnterpriseAI.' : 'Selamat datang di EnterpriseAI.';
+    });
+    // Alert info
+    function alertInfo(type) {
+      if (type==='support') alert('Hubungi support@enterpriseai.com');
+      else alert('EnterpriseAI v1.0. Dibuat untuk membantu.');
     }
-
-    async function sendPrompt() {
-      const prompt = document.getElementById("promptInput").value;
-      if (!prompt) return;
-
-      loader.style.display = 'block';
-      responseBox.style.display = 'none';
-
+    // Preset buttons
+    const prompts = ['Bicara dengan EnterpriseAI','Apa fungsi AI?','Jelaskan konsep pembelajaran mesin'];
+    const presets = document.getElementById('presets');
+    prompts.forEach(t => { const b=document.createElement('button'); b.textContent=t; b.onclick=()=>{ document.getElementById('userInput').value=t; sendMessage();}; presets.appendChild(b); });
+    // Send message
+    async function sendMessage() {
+      const text = document.getElementById('userInput').value.trim(); if(!text) return;
+      appendBubble('user', text);
+      document.getElementById('userInput').value='';
+      appendBubble('bot','Sedang memproses...');
+      // Cohere API call
       try {
-        const res = await fetch('https://api.cohere.ai/v1/generate', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer IHjr8UQKTNoXYBn4Tp6hUVrzbVY91I2VRgdnQWaO`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model: "command",
-            prompt: prompt,
-            max_tokens: 200,
-            temperature: 0.7,
-          })
+        const res = await fetch('https://api.cohere.ai/v1/generate',{
+          method:'POST',headers:{
+            'Authorization':'Bearer YOUR_COHERE_API_KEY','Content-Type':'application/json'
+          },body:JSON.stringify({model:'command',prompt:text,max_tokens:150,temperature:0.7})
         });
-
         const data = await res.json();
-        if (data.generations) {
-          loader.style.display = 'none';
-          responseBox.textContent = data.generations[0].text.trim();
-          responseBox.style.display = 'block';
-          pingSound.play();
-        } else {
-          responseBox.textContent = 'Tidak ada respon.';
-          responseBox.style.display = 'block';
-          loader.style.display = 'none';
-        }
-      } catch (err) {
-        responseBox.textContent = 'Terjadi kesalahan: ' + err.message;
-        responseBox.style.display = 'block';
-        loader.style.display = 'none';
+        const last = [...document.querySelectorAll('.bubble.bot')].pop();
+        last.textContent = data.generations?.[0].text.trim() || 'Tidak ada response.';
+      } catch(err) {
+        const last=[...document.querySelectorAll('.bubble.bot')].pop(); last.textContent='Error: '+err.message;
       }
+    }
+    function appendBubble(sender,msg){
+      // remove 'Sedang memproses...' if exist
+      if(sender==='bot'){ const temp=[...document.querySelectorAll('.bubble.bot')]; const last=temp.pop(); if(last.textContent==='Sedang memproses...') last.remove(); }
+      const d=document.createElement('div'); d.className='bubble '+sender; d.textContent=msg; document.getElementById('chatArea').appendChild(d);
+      document.getElementById('chatArea').scrollTop = document.getElementById('chatArea').scrollHeight;
     }
   </script>
 </body>
