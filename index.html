@@ -1,0 +1,167 @@
+<!DOCTYPE html><html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EnterpriseAI - Bantu Anda dengan AI</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #000;
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }h1 {
+  font-size: 2em;
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: 600;
+}
+
+.input-box {
+  background-color: #1f1f1f;
+  border-radius: 16px;
+  padding: 18px;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.input-box input {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1em;
+  flex: 1;
+  outline: none;
+}
+
+.input-box button {
+  background-color: #444;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+  color: #fff;
+  font-weight: 500;
+}
+
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  max-width: 600px;
+}
+
+.button-group button {
+  background: transparent;
+  border: 1px solid #444;
+  padding: 10px 16px;
+  border-radius: 30px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.95em;
+}
+
+.button-group button:hover {
+  background-color: #1f1f1f;
+}
+
+.response {
+  margin-top: 30px;
+  max-width: 600px;
+  background: #1f1f1f;
+  padding: 18px;
+  border-radius: 20px;
+  white-space: pre-line;
+  font-size: 1em;
+  line-height: 1.6;
+  box-shadow: 0 0 10px #111;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 1.5em;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <h1>Perlu bantuan? Silahkan tanya</h1>  <div class="input-box">
+    <input type="text" id="promptInput" placeholder="Tentang EnterpriseAI" />
+    <button onclick="sendPrompt()">Kirim</button>
+  </div>  <div class="button-group" id="buttonGroup"></div>  <div class="response" id="responseBox" style="display:none;"></div>  <script>
+    const COHERE_API_KEY = 'YOUR_COHERE_API_KEY'; // Ganti dengan API key kamu
+
+    const prompts = [
+      "Tentang EnterpriseAI",
+      "Bicara Dengan EnterpriseAI",
+      "Jelaskan konsep AI",
+      "Tulis puisi tentang teknologi",
+      "Apa itu machine learning?",
+      "Buat ide startup AI"
+    ];
+
+    const buttonGroup = document.getElementById("buttonGroup");
+
+    prompts.forEach(text => {
+      const btn = document.createElement("button");
+      btn.textContent = text;
+      btn.onclick = () => sendCustomPrompt(text);
+      buttonGroup.appendChild(btn);
+    });
+
+    function sendCustomPrompt(text) {
+      document.getElementById("promptInput").value = text;
+      sendPrompt();
+    }
+
+    async function sendPrompt() {
+      const prompt = document.getElementById("promptInput").value;
+      if (!prompt) return;
+
+      const responseBox = document.getElementById("responseBox");
+      responseBox.style.display = 'block';
+      responseBox.textContent = 'Sedang memproses...';
+
+      try {
+        const res = await fetch('https://api.cohere.ai/v1/generate', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${COHERE_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: "command",
+            prompt: prompt,
+            max_tokens: 200,
+            temperature: 0.7,
+          })
+        });
+
+        const data = await res.json();
+        if (data.generations) {
+          responseBox.textContent = data.generations[0].text.trim();
+        } else {
+          responseBox.textContent = 'Tidak ada respon.';
+        }
+      } catch (err) {
+        responseBox.textContent = 'Terjadi kesalahan: ' + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
