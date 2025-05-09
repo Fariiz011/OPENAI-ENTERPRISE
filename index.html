@@ -2,7 +2,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EnterpriseAI - Bantu Anda dengan AI</title>
+  <title>EnterpriseAI</title>
   <style>
     body {
       margin: 0;
@@ -11,44 +11,73 @@
       color: #fff;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      padding: 40px 20px;
-    }h1 {
-  font-size: 2em;
-  text-align: center;
-  margin-bottom: 30px;
-  font-weight: 600;
+      height: 100vh;
+      overflow: hidden;
+    }header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: #111;
+}
+
+.logo {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.settings {
+  cursor: pointer;
+}
+
+.chat-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 1s ease;
+}
+
+.bubble {
+  background: #1f1f1f;
+  border-radius: 20px;
+  padding: 16px;
+  margin: 10px 0;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 0 10px #111;
+  white-space: pre-wrap;
 }
 
 .input-box {
-  background-color: #1f1f1f;
-  border-radius: 16px;
-  padding: 18px;
-  width: 100%;
-  max-width: 600px;
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 30px;
+  background-color: #1f1f1f;
+  padding: 16px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
 }
 
 .input-box input {
+  flex: 1;
   background: transparent;
   border: none;
   color: #fff;
   font-size: 1em;
-  flex: 1;
   outline: none;
 }
 
 .input-box button {
-  background-color: #444;
+  background: none;
   border: none;
-  border-radius: 12px;
-  padding: 10px 16px;
-  cursor: pointer;
   color: #fff;
-  font-weight: 500;
+  font-size: 1.4em;
+  cursor: pointer;
 }
 
 .button-group {
@@ -56,7 +85,7 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
-  max-width: 600px;
+  margin-top: 20px;
 }
 
 .button-group button {
@@ -69,53 +98,78 @@
   font-size: 0.95em;
 }
 
-.button-group button:hover {
-  background-color: #1f1f1f;
+.loader {
+  border: 4px solid #333;
+  border-top: 4px solid #fff;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
 }
 
-.response {
-  margin-top: 30px;
-  max-width: 600px;
-  background: #1f1f1f;
-  padding: 18px;
-  border-radius: 20px;
-  white-space: pre-line;
-  font-size: 1em;
-  line-height: 1.6;
-  box-shadow: 0 0 10px #111;
-  animation: fadeIn 0.3s ease-in-out;
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-@media (max-width: 600px) {
-  h1 {
-    font-size: 1.5em;
-  }
+.fade-in-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 2em;
+  animation: fadeOut 1.2s ease 1.5s forwards;
+  z-index: 9999;
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; visibility: hidden; }
 }
 
   </style>
 </head>
 <body>
-  <h1>Perlu bantuan? Silahkan tanya</h1>  <div class="input-box">
-    <input type="text" id="promptInput" placeholder="Tentang EnterpriseAI" />
-    <button onclick="sendPrompt()">Kirim</button>
-  </div>  <div class="button-group" id="buttonGroup"></div>  <div class="response" id="responseBox" style="display:none;"></div>  <script>
-    const COHERE_API_KEY = 'YOUR_COHERE_API_KEY'; // Ganti dengan API key kamu
+  <div class="fade-in-screen">Memuat EnterpriseAI...</div>
+  <header>
+    <div class="logo">EnterpriseAI</div>
+    <div class="settings">⚙️</div>
+  </header>  <div class="chat-container">
+    <div class="bubble" id="responseBox" style="display:none;"></div>
+    <div class="loader" id="loader" style="display:none;"></div>
+    <div class="input-box">
+      <input type="text" id="promptInput" placeholder="Tanyakan sesuatu..." />
+      <button onclick="sendPrompt()">✈️</button>
+    </div>
+    <div class="button-group" id="buttonGroup"></div>
+  </div><audio id="pingSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
+
+  <script>
+    const COHERE_API_KEY = 'IHjr8UQKTNoXYBn4Tp6hUVrzbVY91I2VRgdnQWaO';
 
     const prompts = [
       "Tentang EnterpriseAI",
-      "Bicara Dengan EnterpriseAI",
       "Jelaskan konsep AI",
-      "Tulis puisi tentang teknologi",
+      "Buat puisi tentang teknologi",
       "Apa itu machine learning?",
       "Buat ide startup AI"
     ];
 
     const buttonGroup = document.getElementById("buttonGroup");
+    const responseBox = document.getElementById("responseBox");
+    const loader = document.getElementById("loader");
+    const pingSound = document.getElementById("pingSound");
 
     prompts.forEach(text => {
       const btn = document.createElement("button");
@@ -133,15 +187,14 @@
       const prompt = document.getElementById("promptInput").value;
       if (!prompt) return;
 
-      const responseBox = document.getElementById("responseBox");
-      responseBox.style.display = 'block';
-      responseBox.textContent = 'Sedang memproses...';
+      loader.style.display = 'block';
+      responseBox.style.display = 'none';
 
       try {
         const res = await fetch('https://api.cohere.ai/v1/generate', {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${COHERE_API_KEY}`,
+            'Authorization': `Bearer IHjr8UQKTNoXYBn4Tp6hUVrzbVY91I2VRgdnQWaO`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
@@ -154,12 +207,19 @@
 
         const data = await res.json();
         if (data.generations) {
+          loader.style.display = 'none';
           responseBox.textContent = data.generations[0].text.trim();
+          responseBox.style.display = 'block';
+          pingSound.play();
         } else {
           responseBox.textContent = 'Tidak ada respon.';
+          responseBox.style.display = 'block';
+          loader.style.display = 'none';
         }
       } catch (err) {
         responseBox.textContent = 'Terjadi kesalahan: ' + err.message;
+        responseBox.style.display = 'block';
+        loader.style.display = 'none';
       }
     }
   </script>
